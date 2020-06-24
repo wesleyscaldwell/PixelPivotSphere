@@ -22,8 +22,18 @@ const char MAIN_page[] = R"=====(
   <br/>
   <label>Motor Number</label>
   <input id="MotorNumber" value="1"/>
-  
-  
+  <br/>
+  <br/>
+  <label>Photo Actions</label>
+  <div class="input_wrap">
+    <input type="text" id="PhotoActions" value="%PhotoActions%"/>
+  </div>
+  <button type="button" onclick="updateActions()">Set Actions</button><BR>
+  <span id="actionsState">NA</span>
+  <br/>
+  <br/>
+  <button type="button" onclick="RunPhotoTake()">Run Photo Procoess</button><BR>
+  <span id="PhotoProcessResult">NA</span>
 </div>
   <br/>
   <br/>
@@ -52,7 +62,44 @@ function sendData(rotation) {
   xhttp.send();
 }
 
+function updateActions() {
+  document.getElementById("actionsState").innerHTML = "Processing"
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("actionsState").innerHTML = this.responseText;
+    }
+  };
+  var actionsValue = document.getElementById("PhotoActions").value;
+  xhttp.open("GET", "SetPhotoActions?ACTIONS=" + actionsValue + "", true);
+  xhttp.send();
+}
+
+function RunPhotoTake() {
+  document.getElementById("PhotoProcessResult").innerHTML = "Processing"
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("PhotoProcessResult").innerHTML = this.responseText;
+    }
+  };
+  xhttp.open("GET", "RunPhotoSphere", true);
+  xhttp.send();
+}
+
 </script>
+<style>
+div {
+    padding: 6px 17px; /* equal to negative input's margin for mimic normal `div` box-sizing */
+}
+
+input {
+    width: 100%; /* force to expand to container's width */ 
+    border: 7px solid #DFDFDF;  
+    padding: 0 10px;
+    margin: 0 -17px; /* negative margin = border-width + horizontal padding */ 
+} 
+</style>
 <br><br>
 </body>
 </html>
