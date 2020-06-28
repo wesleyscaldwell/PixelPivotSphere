@@ -1,11 +1,28 @@
-#include <ESP8266WebServer.h>
-#include <ESP8266mDNS.h>
-#import "MainPageHtml.h"
 #include <EEPROM.h>
+
+#include <WiFi.h>
+#include <WiFiClient.h>
+#include <WebServer.h>
+#include <ESPmDNS.h>
+
+#import "MainPageHtml.h"
+
+
+//#include <ESP8266WebServer.h>
+//#include <ESP8266mDNS.h>
+//#include <WiFi.h>
+//#include <WiFiServer.h>
+
 
   const char* ssid = "MyWifi";  //"CGOffice"; //
   const char* password = "3132143880";
-  ESP8266WebServer server(80);
+  //ESP8266WebServer server(80);
+  //WiFiServer server(80);
+  WebServer server(80);
+
+
+  const int BUTTON_PIN = 0;
+  const int LED_PIN = 5;
 
   //const int led = 13;
   
@@ -18,20 +35,37 @@
   boolean Direction = true;
 
 
-  uint8_t ConfigPin1 = 5; //D1;
-  uint8_t ConfigPin2 = 4; //D2;
-  uint8_t ConfigPin3 = 0; //D3;
-  uint8_t ConfigPin4 = 2; //D4;
+  //uint8_t ConfigPin1 = 5; //D1;
+  //uint8_t ConfigPin2 = 4; //D2;
+  //uint8_t ConfigPin3 = 0; //D3;
+  //uint8_t ConfigPin4 = 2; //D4;
 
-  uint8_t ConfigPin5 = 14; //D5;
-  uint8_t ConfigPin6 = 12; //D6;
-  uint8_t ConfigPin7 = 13; //D7;
-  uint8_t ConfigPin8 = 15; //D8;
+  //uint8_t ConfigPin5 = 14; //D5;
+  //uint8_t ConfigPin6 = 12; //D6;
+  //uint8_t ConfigPin7 = 13; //D7;
+  //uint8_t ConfigPin8 = 15; //D8;
 
-  uint8_t ConfigPin5Rev = 10; //D5;
-  uint8_t ConfigPin6Rev = 16; //D6;
-  uint8_t ConfigPin7Rev = 3; //D7;
-  uint8_t ConfigPin8Rev = 1; //D8;  
+  //uint8_t ConfigPin5Rev = 10; //D5;
+  //uint8_t ConfigPin6Rev = 16; //D6;
+  //uint8_t ConfigPin7Rev = 3; //D7;
+  //uint8_t ConfigPin8Rev = 1; //D8;  
+
+
+  uint8_t ConfigPin1 = 25; //D1;
+  uint8_t ConfigPin2 = 26; //D2;
+  uint8_t ConfigPin3 = 27; //D3;
+  uint8_t ConfigPin4 = 14; //D4;
+
+  uint8_t ConfigPin5 = 2; //D5;
+  uint8_t ConfigPin6 = 4; //D6;
+  uint8_t ConfigPin7 = 17; //D7;
+  uint8_t ConfigPin8 = 16; //D8;
+
+  uint8_t ConfigPin5Rev = 22; //D5;
+  uint8_t ConfigPin6Rev = 19; //D6;
+  uint8_t ConfigPin7Rev = 23; //D7;
+  uint8_t ConfigPin8Rev = 18; //D8;  
+
 
   
   const int dirPin = ConfigPin4; 
@@ -60,6 +94,9 @@ void setup(void) {
   Serial.begin(115200);
 
   delay(1000);
+
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+  pinMode(LED_PIN, OUTPUT);
   
   pinMode(ConfigPin1, OUTPUT);    
   pinMode(ConfigPin2, OUTPUT);
@@ -78,18 +115,19 @@ void setup(void) {
   
 
   delay(1500);
-  
-  WiFi.persistent(false);
-  WiFi.disconnect(true);
+
+  digitalWrite(LED_PIN, LOW); // LED off
+
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   Serial.println("");
 
-  while (WiFi.status() != WL_CONNECTED) 
-  {
+  // Wait for connection
+  while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
+
   delay(500);
   Serial.println("");
   Serial.print("Connected to ");
@@ -97,12 +135,25 @@ void setup(void) {
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
 
-  PhotoSphereActions = EepromGet(eepromActionsStart,eepromActionsLen);
-
-  if (MDNS.begin("esp8266")) 
+  if (MDNS.begin("esp32")) //if (MDNS.begin("esp8266")) 
   {
     Serial.println("MDNS responder started");
   }
+  
+  
+  //WiFi.persistent(false);
+  //WiFi.disconnect(true);
+  //WiFi.mode(WIFI_STA);
+  //WiFi.begin(ssid, password);
+  //Serial.println("");
+  //delay(500);
+  //Serial.println("");
+  //Serial.print("Connected to ");
+  //Serial.println(ssid);
+  //Serial.print("IP address: ");
+  //Serial.println(WiFi.localIP());
+
+  PhotoSphereActions = EepromGet(eepromActionsStart,eepromActionsLen);
 
   server.on("/", handleRoot);
   server.on("/inline", []() {    server.send(200, "text/plain", "this works as well");  });
@@ -114,13 +165,15 @@ void setup(void) {
 
   server.on("/RunPhotoSphere", []() {  ProcessPictureSphere();  });
 
-  //server.onNotFound(handleNotFound);
+  server.onNotFound(handleNotFound);
 
   server.begin();
   Serial.println("HTTP server started");
 
 
 }
+
+
 
 
 void loop() {
@@ -625,7 +678,7 @@ void handleNotFound()
   //digitalWrite(led, 1);
   String message = "File Not Found\n\n";
   message += "URI: ";
-  message += server.uri();
+  message += ""; //server.uri();
   message += "\nMethod: ";
   message += (server.method() == HTTP_GET) ? "GET" : "POST";
   message += "\nArguments: ";
