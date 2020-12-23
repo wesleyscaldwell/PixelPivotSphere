@@ -56,15 +56,15 @@
   uint8_t ConfigPin3 = 22; //D3;
   uint8_t ConfigPin4 = 18; //D4;
 
-  uint8_t ConfigPin5 = 38; //D5;
-  uint8_t ConfigPin6 = 34; //D6;
-  uint8_t ConfigPin7 = 35; //D7;
-  uint8_t ConfigPin8 = 39; //D8;
+  uint8_t ConfigPin5 = 14; //D5;
+  uint8_t ConfigPin6 = 27; //D6;
+  uint8_t ConfigPin7 = 13; //D7;
+  uint8_t ConfigPin8 = 12; //D8;
 
-  uint8_t ConfigPin5Rev = 14; //D5;
-  uint8_t ConfigPin6Rev = 27; //D6;
-  uint8_t ConfigPin7Rev = 13; //D7;
-  uint8_t ConfigPin8Rev = 12; //D8;  
+  uint8_t ConfigPin5Rev = 32; //D5;
+  uint8_t ConfigPin6Rev = 26; //D6;
+  uint8_t ConfigPin7Rev = 25; //D7;
+  uint8_t ConfigPin8Rev = 33; //D8;  
 
 
   

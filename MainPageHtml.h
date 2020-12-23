@@ -212,6 +212,16 @@ function RunPhotoTake() {
 
 </script>
 <style>
+td {
+    padding: 10px;  
+    width: 100%;
+    align: center;
+}
+button {
+    width: 150px;
+    height: 55px;
+    text-align: center;
+}
 div {
     padding: 6px 17px; /* equal to negative input's margin for mimic normal `div` box-sizing */
 }
